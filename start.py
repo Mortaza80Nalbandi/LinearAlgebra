@@ -3,6 +3,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+def f(x):
+    return np.exp(-x)
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 def Phi(X,w,b):
@@ -10,52 +12,78 @@ def Phi(X,w,b):
     return z
 
 def C(w,b, data):
-    c= 0;
+    c= 0
     for i in range(data[0].shape[0]):
         c+=2**((Phi(data[0][i],w,b) - data[1][i]))
     return c
 def compute_dC_dw(w,b, data):
     g = 0;
     for i in range(data[0].shape[0]):
-        g += -1*2 * (data[0][i]*sigmoid(w.T@data[0][i]+ b))*((Phi(data[0][i], w, b) - data[1][i]))
+        g += 2 * (data[0][i]*f(w.T@data[0][i]+ b)*(2**sigmoid(w.T@data[0][i]+ b)))*((Phi(data[0][i], w, b) - data[1][i]))
     return g
 def compute_dC_db(w,b, data):
     g = 0;
     for i in range(data[0].shape[0]):
-        g +=-1*2 * (sigmoid(w.T @ data[0][i] + b) * ((Phi(data[0][i], w, b) - data[1][i])))
+        g += 2 * f(w.T@data[0][i]+ b)*(2**sigmoid(w.T @ data[0][i] + b) * ((Phi(data[0][i], w, b) - data[1][i])))
     return g
 def compute_dC_dw_numeric(w,b, data):
-    return 0
+    epsi = 0.00001
+    c1 = C(w-epsi,b,data)
+    c2 = C(w + epsi, b, data)
+    return (c2 - c1)/2*epsi
 def compute_dC_db_numeric(w,b, data):
-    return 0
+    epsi = 0.00001
+    c1 = C(w , b - epsi, data)
+    c2 = C(w , b + epsi, data)
+    return (c2 - c1) / 2 * epsi
+def it_plot(w,b):
+    xs = np.linspace(-5, 5, 100)
+    ys = (-b - xs * w[0]) / w[1]
+    plt.plot(xs, ys, color='black')
+    error_no = 0
+    plt.axis('square')
+    plt.xlim(-5, 5)
+    plt.ylim(-5, 5)
+    for i in range(data[0].shape[0]):
+        if (data[1][i] == 0):
+            if (Phi(data[0][i], w, b) < 0.5):
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=3)
+            else:
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=1)
+                error_no = error_no+1
+        elif (data[1][i] == 1):
+            if (Phi(data[0][i], w, b) >= 0.5):
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=3)
+            else:
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
+                error_no = error_no + 1
+    print("error rate:",error_no/data[0].shape[0])
+    plt.show()
 def grad_decent(data):
-    w = np.array([1,1])
-    b = 1
-    lambdaValue = 0.00001  # this is the learning rate
-    for i in range(10000):
+    w = np.array([0.5,0.5])
+    b = 0.5
+    lambdaValue = 0.001  # this is the learning rate
+    for i in range(500):
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
-        w = w + lambdaValue * dC_dw
-        b = b + lambdaValue * dC_db
+        dC_dw_n = compute_dC_dw_numeric(w, b, data)
+        dC_db_n = compute_dC_db_numeric(w, b, data)
+        tempw =w - lambdaValue * dC_dw
+        tempb =b - lambdaValue * dC_db
+        if(abs(w[0]-tempw[0]<0.1) and abs(w[1]-tempw[1]<0.1) and abs(b-tempb<0.1) ):
+            break
+        w = tempw
+        b = tempb
         #print(C(w, b, data))
-        if(i%100 ==0):
-            xs = np.linspace(-5, 5, 100)
-            ys = (-b - xs*w[0])/w[1]
-            plt.plot(xs, ys, '-r',color='black')
-            for i in range(data[0].shape[0]):
-                if (data[1][i] == 0):
-                    plt.plot(X1[i, 0], X1[i, 1], 'o', color='g', markersize=3)
-                    if (Phi(data[0][i], w, b) < 0.5):
-                        plt.plot(X1[i, 0], Phi(data[0][i], w, b), 'o', color='b', markersize=3)
-                    else:
-                        plt.plot(X1[i, 0], Phi(data[0][i], w, b), 'o', color='b', markersize=1)
-                elif (data[1][i] == 1):
-                    plt.plot(X1[i, 0], X1[i, 1], 'o', color='y', markersize=3)
-                    if (Phi(data[0][i], w, b) >= 0.5):
-                        plt.plot(X1[i, 0], Phi(data[0][i], w, b), 'o', color='r', markersize=3)
-                    else:
-                        plt.plot(X1[i, 0], Phi(data[0][i], w, b), 'o', color='r', markersize=1)
-            plt.show()
+        print(w,b)
+        #print(dC_dw ,dC_dw_n )
+        #print(dC_db ,dC_db_n)
+        #print(np.linalg.norm(dC_dw-dC_dw_n))
+        #print(np.linalg.norm(dC_dw-dC_dw_n)/np.linalg.norm(dC_dw))
+        #it_plot(w,b)
+
+    return b,w
+
 
 
 
@@ -88,7 +116,9 @@ raw_data = np.load('data2d.npz')
 X1 = raw_data['X']
 y1 = raw_data['y']
 data = (X1,y1)
-print(grad_decent(data))
+b,w = grad_decent(data)
+print(w,b)
+it_plot(w,b)
 #w,b= np.array([1,2]),1
 #print(data)
 #print("PHI",Phi(data[0],w,b))
