@@ -62,20 +62,21 @@ def it_plot(w,b):
 def grad_decent(data):
     w = np.array([0.5,0.5])
     b = 0.5
-    lambdaValue = 0.001  # this is the learning rate
-    for i in range(500):
+    lambdaValue = 0.0001 # this is the learning rate
+    for i in range(5000):
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
         dC_dw_n = compute_dC_dw_numeric(w, b, data)
         dC_db_n = compute_dC_db_numeric(w, b, data)
         tempw =w - lambdaValue * dC_dw
         tempb =b - lambdaValue * dC_db
-        if(abs(w[0]-tempw[0]<0.1) and abs(w[1]-tempw[1]<0.1) and abs(b-tempb<0.1) ):
+        if(abs(w[0]-tempw[0])<0.0000001 and abs(w[1]-tempw[1])<0.0000001 and abs(b-tempb)<0.0000001 ):
+            print("break",i)
             break
         w = tempw
         b = tempb
         #print(C(w, b, data))
-        print(w,b)
+        #print(w,b)
         #print(dC_dw ,dC_dw_n )
         #print(dC_db ,dC_db_n)
         #print(np.linalg.norm(dC_dw-dC_dw_n))
@@ -84,6 +85,44 @@ def grad_decent(data):
 
     return b,w
 
+
+def grad_decent_anim(data):
+    w = np.array([0.5,0.5])
+    b = 0.5
+    lambdaValue = 0.0001 # this is the learning rate
+    for i in range(5000):
+        plt.cla()
+        dC_dw = compute_dC_dw(w, b, data)
+        dC_db = compute_dC_db(w, b, data)
+        dC_dw_n = compute_dC_dw_numeric(w, b, data)
+        dC_db_n = compute_dC_db_numeric(w, b, data)
+        tempw =w - lambdaValue * dC_dw
+        tempb =b - lambdaValue * dC_db
+        if(abs(w[0]-tempw[0])<0.0000001 and abs(w[1]-tempw[1])<0.0000001 and abs(b-tempb)<0.0000001 ):
+            print("break",i)
+            break
+        w = tempw
+        b = tempb
+        xs = np.linspace(-5, 5, 100)
+        ys = (-b - xs * w[0]) / w[1]
+        plt.plot(xs, ys, color='black')
+        error_no = 0
+        plt.axis('square')
+        plt.xlim(-5, 5)
+        plt.ylim(-5, 5)
+        for i in range(data[0].shape[0]):
+            if (data[1][i] == 0):
+                if (Phi(data[0][i], w, b) < 0.5):
+                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=3)
+                else:
+                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=1)
+            elif (data[1][i] == 1):
+                if (Phi(data[0][i], w, b) >= 0.5):
+                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=3)
+                else:
+                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
+        plt.draw()
+        plt.pause(.001)
 
 
 
@@ -116,9 +155,10 @@ raw_data = np.load('data2d.npz')
 X1 = raw_data['X']
 y1 = raw_data['y']
 data = (X1,y1)
-b,w = grad_decent(data)
-print(w,b)
-it_plot(w,b)
+#b,w = grad_decent(data)
+#print(w,b)
+#it_plot(w,b)
+grad_decent_anim(data)
 #w,b= np.array([1,2]),1
 #print(data)
 #print("PHI",Phi(data[0],w,b))
