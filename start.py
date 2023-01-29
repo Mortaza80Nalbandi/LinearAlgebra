@@ -14,7 +14,7 @@ def Phi(X,w,b):
 def C(w,b, data):
     c= 0
     for i in range(data[0].shape[0]):
-        c+=2**((Phi(data[0][i],w,b) - data[1][i]))
+        c+=(Phi(data[0][i],w,b) - data[1][i])*(Phi(data[0][i],w,b) - data[1][i])
     return c
 def compute_dC_dw(w,b, data):
     g = 0;
