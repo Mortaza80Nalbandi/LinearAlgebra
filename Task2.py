@@ -8,7 +8,7 @@ def f(x):
 def sigmoid(x):
     return 1/(1+tf.math.exp((-1)*x))
 def Phi(X,w,b):
-    z =sigmoid(X.reshape(1,2) @ w + b)
+    z =sigmoid(X.reshape(w.shape[1],w.shape[0]) @ w + b)
     return z
 
 def C(w,b, data):
@@ -41,7 +41,7 @@ def it_plot(w,b):
     print("error rate:",error_no/data[0].shape[0])
     plt.show()
 def grad_decent(data):
-    w = tf.Variable(tf.random.normal([2,1], 0, 1, tf.float32, seed=1),shape=(2,1),dtype=float)
+    w = tf.Variable(tf.random.normal([data[0].shape[1],1], 0, 1, tf.float32, seed=1),shape=(2,1),dtype=float)
     b = tf.Variable(tf.random.normal([1], 0, 1, tf.float32, seed=1))
     print(w,b)
     lambdaValue = 0.1 # this is the learning rate
@@ -62,8 +62,9 @@ def grad_decent(data):
 
 
 def grad_decent_anim(data):
-    w = tf.Variable(tf.random.normal([2, 1], 0, 1, tf.float32, seed=1), shape=(2, 1), dtype=float)
+    w = tf.Variable(tf.random.normal([data[0].shape[1], 1], 0, 1, tf.float32, seed=1), shape=(2, 1), dtype=float)
     b = tf.Variable(tf.random.normal([1], 0, 1, tf.float32, seed=1))
+    print(w,b)
     lambdaValue = 0.1 # this is the learning rate
 
     for i in range(2000):
@@ -72,6 +73,7 @@ def grad_decent_anim(data):
         with tf.GradientTape(persistent=True) as tape:
             y = C(w, b, data)
         [dl_dw, dl_db] = tape.gradient(y, [w, b])
+
         w.assign_sub(lambdaValue * dl_dw)
         b.assign_sub(lambdaValue * dl_db)
         xs = np.linspace(-5, 5, 100)
@@ -96,10 +98,11 @@ def grad_decent_anim(data):
                     error_no = error_no + 1
         plt.draw()
         plt.pause(.00001)
-        if(error_no==0):
-            return w,b
-
-
+        if (lambdaValue * dl_dw[0] < 0.01 and lambdaValue * dl_dw[1] < 0.01 and lambdaValue * dl_db < 0.01 and error_no==0):
+            break
+        #if(error_no==0):
+         #   return w,b
+    return w,b
 
 def plot2d():
     raw_data = tf.load('data2d.npz')

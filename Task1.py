@@ -19,12 +19,12 @@ def C(w,b, data):
 def compute_dC_dw(w,b, data):
     g = 0;
     for i in range(data[0].shape[0]):
-        g += 2 * (data[0][i]*f(w.T@data[0][i]+ b)*(2**sigmoid(w.T@data[0][i]+ b)))*((Phi(data[0][i], w, b) - data[1][i]))
+        g += 2 * (data[0][i]*f(w.T@data[0][i]+ b)*(sigmoid(w.T@data[0][i]+ b)*sigmoid(w.T@data[0][i]+ b)))*((Phi(data[0][i], w, b) - data[1][i]))
     return g
 def compute_dC_db(w,b, data):
     g = 0;
     for i in range(data[0].shape[0]):
-        g += 2 * f(w.T@data[0][i]+ b)*(2**sigmoid(w.T @ data[0][i] + b) * ((Phi(data[0][i], w, b) - data[1][i])))
+        g += 2 * f(w.T@data[0][i]+ b)*(sigmoid(w.T @ data[0][i] + b) *sigmoid(w.T @ data[0][i] + b) * ((Phi(data[0][i], w, b) - data[1][i])))
     return g
 def compute_dC_dw_numeric(w,b, data):
     epsi = 0.00001
@@ -87,28 +87,15 @@ def grad_decent(data):
 
 
 def grad_decent_anim(data):
-    w = np.array([0.5,0.5])
-    b = 0.5
-    lambdaValue = 0.0001 # this is the learning rate
+    w = np.array([4.5,3.5])
+    b = 2.0
+    lambdaValue = 0.1 # this is the learning rate
     for i in range(5000):
         plt.cla()
-        dC_dw = compute_dC_dw(w, b, data)
-        dC_db = compute_dC_db(w, b, data)
-        dC_dw_n = compute_dC_dw_numeric(w, b, data)
-        dC_db_n = compute_dC_db_numeric(w, b, data)
-        tempw =w - lambdaValue * dC_dw
-        tempb =b - lambdaValue * dC_db
-        if(abs(w[0]-tempw[0])<0.0000001 and abs(w[1]-tempw[1])<0.0000001 and abs(b-tempb)<0.0000001 ):
-            print("break",i)
-            break
-        w = tempw
-        b = tempb
-        print(w,b)
         xs = np.linspace(-5, 5, 100)
         ys = (-b - xs * w[0]) / w[1]
         plt.plot(xs, ys, color='black')
         error_no = 0
-        plt.axis('square')
         plt.xlim(-5, 5)
         plt.ylim(-5, 5)
         for i in range(data[0].shape[0]):
@@ -124,6 +111,20 @@ def grad_decent_anim(data):
                     plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
         plt.draw()
         plt.pause(.001)
+        dC_dw = compute_dC_dw(w, b, data)
+        dC_db = compute_dC_db(w, b, data)
+        dC_dw_n = compute_dC_dw_numeric(w, b, data)
+        dC_db_n = compute_dC_db_numeric(w, b, data)
+        tempw =w - lambdaValue * dC_dw
+        tempb =b - lambdaValue * dC_db
+        if(abs(w[0]-tempw[0])<0.001 and abs(w[1]-tempw[1])<0.001 and abs(b-tempb)<0.001 and error_no ==0 ):
+            print("break",i)
+            break
+        w = tempw
+        b = tempb
+        print(w,b)
+
+
 
 
 
