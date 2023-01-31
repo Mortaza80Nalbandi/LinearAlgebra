@@ -20,7 +20,6 @@ def C( data,Layers):
     for i in range(data[0].shape[0]):
         c += z[i]
     return c
-    return c
 class Layer(object):
 
     def get_output(self, X):
@@ -78,7 +77,7 @@ class SoftmaxOutputLayer(Layer):
 
 def grad_dec(data,Layers):
     max_nb_of_iterations = 600  # Train for a maximum of 300 iterations
-    lambdaValue = 0.1  # Gradient descent learning rate
+    lambdaValue = 0.001  # Gradient descent learning rate
     for iteration in range(max_nb_of_iterations):
         for layer in Layers:
             w,b = layer.get_params_iter()
@@ -87,7 +86,6 @@ def grad_dec(data,Layers):
             [dl_dw, dl_db] = tape.gradient(y, [w, b])
             w.assign_sub(lambdaValue * dl_dw)
             b.assign_sub(lambdaValue * dl_db)
-            layer.set_params_iter(w,b)
         error_no=data[0].shape[0]
         x1,x2,x3 = 0,0,0
         z1 = Layers[0].get_output(data[0])
@@ -111,7 +109,6 @@ def grad_dec(data,Layers):
                 x3 += 1
                 error_no -= 1
         print("iteration ",iteration," errors:" ,error_no)
-
 
 X = np.zeros((150,4),dtype=float)
 Y = np.zeros((150,3),dtype=float)
