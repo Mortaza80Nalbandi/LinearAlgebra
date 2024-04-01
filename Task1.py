@@ -138,7 +138,7 @@ def grad_decent_anim(data):
                     plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
                     error_no += 1
         plt.draw()
-        plt.pause(.001)
+        plt.pause(.1)
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
         dC_dw_n = compute_dC_dw_numeric(w, b, data)
@@ -152,9 +152,9 @@ def grad_decent_anim(data):
         b = tempb
         print(w, b)
 
-
-def plot2d():
-    raw_data = np.load('data2d.npz')
+def plotXd(fileName):
+    raw_data = np.load(fileName+'.npz')
+    plt.title(fileName +" Representation")
     X1 = raw_data['X']
     y1 = raw_data['y']
     for i in range(X1.shape[0]):
@@ -163,28 +163,16 @@ def plot2d():
         elif y1[i] == 1:
             plt.plot(X1[i, 0], X1[i, 1], 'o', color='r', markersize=3)
     plt.show()
-
-
-def plot5d():
-    raw_data = np.load('data5d.npz')
-    x = raw_data['X']
-    y = raw_data['y']
-    for i in range(x.shape[0]):
-        if y[i] == 0:
-            plt.plot(x[i, 0], x[i, 1], 'o', color='b', markersize=3)
-        elif y[i] == 1:
-            plt.plot(x[i, 0], x[i, 1], 'o', color='r', markersize=3)
-    plt.show()
-
-#plot2d()
-#plot5d()
-raw_data = np.load('data2d.npz')
-X1 = raw_data['X']
-y1 = raw_data['y']
-data = (X1, y1)
-b,w = grad_decent(data)
-print(w,b)
-it_plot(w,b)
+if __name__ == '__main__':
+    plotXd("data2d")
+    plotXd("data5d")
+#raw_data = np.load('data2d.npz')
+#X1 = raw_data['X']
+#y1 = raw_data['y']
+#data = (X1, y1)
+#b,w = grad_decent(data)
+#print(w,b)
+#it_plot(w,b)
 #grad_decent_anim(data)
 #w,b= np.array([1,2]),1
 #print(data)
