@@ -73,7 +73,36 @@ def it_plot(w, b):
                 error_no = error_no + 1
     print("error rate:", error_no/data[0].shape[0])
     plt.show()
-
+def anim_plot(w, b,data):
+    plt.cla()
+    xs = np.linspace(-10, 10, 100)
+    ys = (-b - xs * w[0]) / w[1]
+    plt.title("Learning Representation")
+    plt.plot(xs, ys, color='black', label='Classifier line')
+    error_no = 0
+    plt.xlim(-5, 5)
+    plt.ylim(-5, 5)
+    plt.plot([], [], 'o', color='r', markersize=3, label='True Positive')
+    plt.plot([], [], 'o', color='r', markersize=1, label='False Negative')
+    plt.plot([], [], 'o', color='b', markersize=3, label='True Negative')
+    plt.plot([], [], 'o', color='b', markersize=1, label='False Positive')
+    for i in range(data[0].shape[0]):
+        if data[1][i] == 0:
+            if Phi(data[0][i], w, b) < 0.5:
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=3)
+            else:
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=1)
+                error_no += 1
+        elif data[1][i] == 1:
+            if Phi(data[0][i], w, b) >= 0.5:
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=3)
+            else:
+                plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
+                error_no += 1
+    plt.legend()
+    plt.draw()
+    plt.pause(0.001)
+    return error_no
 
 def grad_decent(data):# this is the implementation of alghorytm with no visual animation
     w = np.array([4.5, 3.5])
@@ -101,7 +130,6 @@ def grad_decent(data):# this is the implementation of alghorytm with no visual a
         b = tempb
         print(np.linalg.norm(dC_dw-dC_dw_n))
         print(np.linalg.norm(dC_dw-dC_dw_n)/np.linalg.norm(dC_dw))
-
     return b, w
 
 
@@ -111,34 +139,7 @@ def grad_decent_anim(data):
     b = 2.0
     lambdaValue = 0.1  # this is the learning rate
     for episode in range(5000):
-        plt.cla()
-        xs = np.linspace(-10, 10, 100)
-        ys = (-b - xs * w[0]) / w[1]
-        plt.title("Learning Representation")
-        plt.plot(xs, ys, color='black',label='Classifier line')
-        error_no = 0
-        plt.xlim(-5, 5)
-        plt.ylim(-5, 5)
-        plt.plot([], [], 'o', color='r', markersize=3, label='True Positive')
-        plt.plot([], [], 'o', color='r', markersize=1, label='False Negative')
-        plt.plot([], [], 'o', color='b', markersize=3, label='True Negative')
-        plt.plot([], [], 'o', color='b', markersize=1, label='False Positive')
-        for i in range(data[0].shape[0]):
-            if data[1][i] == 0:
-                if Phi(data[0][i], w, b) < 0.5:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=3)
-                else:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=1)
-                    error_no+=1
-            elif data[1][i] == 1:
-                if Phi(data[0][i], w, b) >= 0.5:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=3)
-                else:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
-                    error_no += 1
-        plt.legend()
-        plt.draw()
-        plt.pause(0.001)
+        error_no = anim_plot(w,b,data)
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
         tempw = w - lambdaValue * dC_dw
