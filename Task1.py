@@ -75,9 +75,9 @@ def it_plot(w, b):
     plt.show()
 
 
-def grad_decent(data):
-    w = np.array([0.5, 0.5])
-    b = 0.5
+def grad_decent(data):# this is the implementation of alghorytm with no visual animation
+    w = np.array([4.5, 3.5])
+    b = 2.0
     lambdaValue = 0.01  # this is the learning rate
     for i in range(5000):
         dC_dw = compute_dC_dw(w, b, data)
@@ -89,16 +89,10 @@ def grad_decent(data):
         error_no=0
         for i in range(data[0].shape[0]):
             if data[1][i] == 0:
-                if Phi(data[0][i], w, b) < 0.5:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=3)
-                else:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='b', markersize=1)
+                if Phi(data[0][i], w, b) >= 0.5:
                     error_no+=1
             elif data[1][i] == 1:
-                if Phi(data[0][i], w, b) >= 0.5:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=3)
-                else:
-                    plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
+                if Phi(data[0][i], w, b) < 0.5:
                     error_no += 1
         if abs(w[0]-tempw[0]) < 0.0000001 and abs(w[1]-tempw[1]) < 0.0000001 and abs(b-tempb) < 0.0000001 and error_no ==0:
             print("break", i)
@@ -107,23 +101,28 @@ def grad_decent(data):
         b = tempb
         print(np.linalg.norm(dC_dw-dC_dw_n))
         print(np.linalg.norm(dC_dw-dC_dw_n)/np.linalg.norm(dC_dw))
-        it_plot(w,b)
 
     return b, w
 
 
 def grad_decent_anim(data):
+    #Initialize the weights
     w = np.array([4.5, 3.5])
     b = 2.0
     lambdaValue = 0.1  # this is the learning rate
     for i in range(5000):
         plt.cla()
-        xs = np.linspace(-5, 5, 100)
+        xs = np.linspace(-10, 10, 100)
         ys = (-b - xs * w[0]) / w[1]
-        plt.plot(xs, ys, color='black')
+        plt.title("Learning Representation")
+        plt.plot(xs, ys, color='black',label='Classifier line')
         error_no = 0
         plt.xlim(-5, 5)
         plt.ylim(-5, 5)
+        plt.plot([], [], 'o', color='r', markersize=3, label='True Positive')
+        plt.plot([], [], 'o', color='r', markersize=1, label='False Negative')
+        plt.plot([], [], 'o', color='b', markersize=3, label='True Negative')
+        plt.plot([], [], 'o', color='b', markersize=1, label='False Positive')
         for i in range(data[0].shape[0]):
             if data[1][i] == 0:
                 if Phi(data[0][i], w, b) < 0.5:
@@ -137,12 +136,11 @@ def grad_decent_anim(data):
                 else:
                     plt.plot(data[0][i][0], data[0][i][1], 'o', color='r', markersize=1)
                     error_no += 1
+        plt.legend()
         plt.draw()
-        plt.pause(.1)
+        plt.pause(0.01)
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
-        dC_dw_n = compute_dC_dw_numeric(w, b, data)
-        dC_db_n = compute_dC_db_numeric(w, b, data)
         tempw = w - lambdaValue * dC_dw
         tempb = b - lambdaValue * dC_db
         if abs(w[0]-tempw[0]) < 0.001 and abs(w[1]-tempw[1]) < 0.001 and abs(b-tempb) < 0.001 and error_no == 0:
@@ -155,31 +153,27 @@ def grad_decent_anim(data):
 def plotXd(fileName):
     raw_data = np.load(fileName+'.npz')
     plt.title(fileName +" Representation")
+    plt.xlabel("X0")
+    plt.ylabel("X1")
     X1 = raw_data['X']
     y1 = raw_data['y']
+    plt.plot([], [], 'o', color='r', markersize=3,label='Positive')
+    plt.plot([], [], 'o', color='b', markersize=3, label='Negative')
     for i in range(X1.shape[0]):
         if y1[i] == 0:
             plt.plot(X1[i, 0], X1[i, 1], 'o', color='b', markersize=3)
         elif y1[i] == 1:
             plt.plot(X1[i, 0], X1[i, 1], 'o', color='r', markersize=3)
+
+    plt.legend()
     plt.show()
+
+
 if __name__ == '__main__':
     plotXd("data2d")
     plotXd("data5d")
-#raw_data = np.load('data2d.npz')
-#X1 = raw_data['X']
-#y1 = raw_data['y']
-#data = (X1, y1)
-#b,w = grad_decent(data)
-#print(w,b)
-#it_plot(w,b)
-#grad_decent_anim(data)
-#w,b= np.array([1,2]),1
-#print(data)
-#print("PHI",Phi(data[0],w,b))
-#print("C=",C(w,b,data))
-#dC_dw = compute_dC_dw(w,b, data)
-#dC_db = compute_dC_db(w,b, data)
-#dC_dw_n = compute_dC_dw_numeric(w,b, data)
-#dC_db_n = compute_dC_db_numeric(w,b, data)
-#grad_decent(data,w,b)
+    raw_data = np.load('data2d.npz')
+    X1 = raw_data['X']
+    y1 = raw_data['y']
+    data = (X1, y1)
+    grad_decent_anim(data)
