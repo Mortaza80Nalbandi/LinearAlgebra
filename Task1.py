@@ -142,20 +142,27 @@ class LogisticRegression:
         # Initialize the weights
         w = np.array([4.5, 3.5])
         b = 2.0
-        lambdavalue = 0.1  # this is the learning rate
-        for episode in range(5000):
+        lambdavalue = 0.5  # this is the learning rate
+        costs = []
+        for episode in range(500):
             error_no = self.anim_plot(w, b, data)
             dc_dw = self.compute_dC_dw(w, b, data)
             dc_db = self.compute_dC_db(w, b, data)
             tempw = w - lambdavalue * dc_dw
             tempb = b - lambdavalue * dc_db
-            if abs(w[0] - tempw[0]) < 0.001 and abs(w[1] - tempw[1]) < 0.001 and abs(b - tempb) < 0.001 and error_no == 0:
+            if abs(w[0] - tempw[0]) < 0.01 and abs(w[1] - tempw[1]) < 0.01 and abs(b - tempb) < 0.01 and error_no == 0:
                 print("Termination in Episode : ", episode)
                 break
             w = tempw
             b = tempb
             print(
-                f'Epoch {episode + 1}, Errors happened: {error_no}, Accuracy: {round(((data[0].shape[0] - error_no) / data[0].shape[0]) * 100, 2)}%')
+                f'Epoch {episode + 1}, Cost happened: {self.C(w,b,data)}, Accuracy: {round(((data[0].shape[0] - error_no) / data[0].shape[0]) * 100, 2)}%')
+            costs.append(self.C(w,b,data))
+        plt.show()
+        plt.plot(costs, 'bo-', label='Train Cost')
+        print(costs)
+        plt.legend()
+        plt.show()
         return w, b
 
 
