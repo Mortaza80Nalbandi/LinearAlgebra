@@ -110,7 +110,7 @@ def grad_decent_anim(data):
     w = np.array([4.5, 3.5])
     b = 2.0
     lambdaValue = 0.1  # this is the learning rate
-    for i in range(5000):
+    for episode in range(5000):
         plt.cla()
         xs = np.linspace(-10, 10, 100)
         ys = (-b - xs * w[0]) / w[1]
@@ -138,17 +138,18 @@ def grad_decent_anim(data):
                     error_no += 1
         plt.legend()
         plt.draw()
-        plt.pause(0.01)
+        plt.pause(0.001)
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
         tempw = w - lambdaValue * dC_dw
         tempb = b - lambdaValue * dC_db
         if abs(w[0]-tempw[0]) < 0.001 and abs(w[1]-tempw[1]) < 0.001 and abs(b-tempb) < 0.001 and error_no == 0:
-            print("break", i)
+            print("Termination in Episode : ", episode)
             break
         w = tempw
         b = tempb
-        print(w, b)
+        print(f'Epoch {episode + 1}, Errors happened: {error_no}, Accuracy: {round(((data[0].shape[0]-error_no) / data[0].shape[0])*100,2)}%')
+    return w,b
 
 def plotXd(fileName):
     raw_data = np.load(fileName+'.npz')
@@ -164,7 +165,6 @@ def plotXd(fileName):
             plt.plot(X1[i, 0], X1[i, 1], 'o', color='b', markersize=3)
         elif y1[i] == 1:
             plt.plot(X1[i, 0], X1[i, 1], 'o', color='r', markersize=3)
-
     plt.legend()
     plt.show()
 
@@ -176,4 +176,5 @@ if __name__ == '__main__':
     X1 = raw_data['X']
     y1 = raw_data['y']
     data = (X1, y1)
-    grad_decent_anim(data)
+    w,b =grad_decent_anim(data)
+    print(f"W = {w} \n b = {b}")
