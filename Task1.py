@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def f(x):
     return np.exp((-1)*x)
 
@@ -111,8 +110,6 @@ def grad_decent(data):# this is the implementation of alghorytm with no visual a
     for i in range(5000):
         dC_dw = compute_dC_dw(w, b, data)
         dC_db = compute_dC_db(w, b, data)
-        dC_dw_n = compute_dC_dw_numeric(w, b, data)
-        dC_db_n = compute_dC_db_numeric(w, b, data)
         tempw = w - lambdaValue * dC_dw
         tempb = b - lambdaValue * dC_db
         error_no=0
@@ -128,8 +125,6 @@ def grad_decent(data):# this is the implementation of alghorytm with no visual a
             break
         w = tempw
         b = tempb
-        print(np.linalg.norm(dC_dw-dC_dw_n))
-        print(np.linalg.norm(dC_dw-dC_dw_n)/np.linalg.norm(dC_dw))
     return b, w
 
 
